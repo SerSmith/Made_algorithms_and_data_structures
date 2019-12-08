@@ -86,7 +86,7 @@ int HashTable::Hash_gorner(int mode, string data) {
 
 
 bool HashTable::Add(string data) {
-// Если объект уже имеется возвращаем ошибку
+// Если объект уже имеется возвращаем ошибку!
     if (Has(data))
         return false;
 
