@@ -8,30 +8,47 @@ using namespace std;
 
 
 
+
+template <typename T>
+bool compare_more(const T first, const T second)
+{
+
+if (first> second) {
+return true;
+} else {
+return false;
+}
+
+}
+
+template <typename T>
 class seq {
 
 public:
-	seq(int length_,int k_);
+
+	seq(const int length_ , const int k_);
 	~seq();
+    seq<T>& operator=(const seq&) = delete;
+    seq<T>& operator=(seq&&) = delete;
 
 // Выгрузка в исходящий поток k первых сохраненных элементов
-void GetFirstK(bool EndFlg);
+void GetFirstK(const bool EndFlg);
 
 // Добавдение нового элемента
-void AddElement(int add);
+void AddElement(const T add);
 
 
 private:
 
 // Сортировка слиянием
-void MergeSort( int* a, int length ) ;
+void MergeSort( T * a, const int length ) ;
 
 // Функция слияния двух массивов
-void Merge(int* FirstArr, int FirstQuant,int* SecondArr, int SecondQuant,int* out);
+void Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int SecondQuant,T* out);
 
 
 //Массив длины 2*k для хранения пока не отсортированных элементов 
-int* array;
+T* array;
 // Длина массива, в данной задаче всегда равна 2*k
 int LengthMain;
 // Размер окна, через которое начинаются числа больше или равные текущему
@@ -43,21 +60,24 @@ bool first_sorted;
 
 };
 
-seq::seq(int length_,int k_)
+template <typename T> 
+seq<T>::seq(const int length_ , const int k_)
 {
     LengthMain=length_;
-    array=new int[LengthMain];
+    array=new T[LengthMain];
     k=k_;
     NowLenght=0;
     first_sorted=0;
 }
 
-seq::~seq()
+template <typename T> 
+seq<T>::~seq()
 {
     delete [] array;
 }
 
-void seq::MergeSort( int* a, int length  ) {
+template <typename T> 
+void seq<T>::MergeSort( T * a, const int length ) {
 if( length <= 1 ) {
 return;
 }
@@ -76,7 +96,8 @@ memcpy( a, c, sizeof( int ) * length );
 delete[] c;
 }
 
-void seq::Merge(int* FirstArr, int FirstQuant,int* SecondArr, int SecondQuant, int* out )
+template <typename T> 
+void seq<T>::Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int SecondQuant,T* out)
 {
   
     int counter=0;
@@ -85,7 +106,7 @@ void seq::Merge(int* FirstArr, int FirstQuant,int* SecondArr, int SecondQuant, i
 
     while (i<FirstQuant or j<SecondQuant)
     {
-        if ((i>=FirstQuant) or (j<SecondQuant and FirstArr[i]>SecondArr[j])) 
+        if ((i>=FirstQuant) or (j<SecondQuant and compare_more(FirstArr[i],SecondArr[j])) ) 
         {
             out[counter]=SecondArr[j];
             j++;
@@ -100,7 +121,8 @@ void seq::Merge(int* FirstArr, int FirstQuant,int* SecondArr, int SecondQuant, i
 
 }
 
-void seq::GetFirstK(bool EndFlg)
+template <typename T> 
+void seq<T>::GetFirstK(bool EndFlg)
 {
     int LengthOut=-1;
     // Если это запуск не по достижению конца ппоследовательности, то выводим только первые k элементов, так как они точно меньше, чем всего последующие элементы
@@ -124,7 +146,8 @@ void seq::GetFirstK(bool EndFlg)
 
 }
 
-void seq::AddElement(int add)
+template <typename T> 
+void seq<T>::AddElement(T add)
 {
     array[NowLenght]=add;
     NowLenght++;
@@ -138,7 +161,7 @@ int main()
 
   std::cin >> num_numbers>>window;
 
-    seq PartialSeq(2*window,window);
+    seq<int> PartialSeq(2*window,window);
 
 
     for (int i = 1; i < num_numbers+1; ++i) {

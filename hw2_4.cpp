@@ -4,7 +4,21 @@
 #include <iostream>
 using namespace std;
 
-int partition(int* array, int PartSize,int PivotIndex)
+
+template <typename T>
+bool compare_more(const T first, const T second)
+{
+
+if (first> second) {
+return true;
+} else {
+return false;
+}
+
+}
+
+template <typename T>
+int partition( T * array, const int PartSize, const int PivotIndex, bool (*compare)(const T, const T))
 {
 
 
@@ -20,7 +34,7 @@ int partition(int* array, int PartSize,int PivotIndex)
         // i-ого элемента, то считать можно начинать с 0
 
 
-            if (array[j] <= array[PartSize]) {
+            if ((compare(array[PartSize],array[j]))  or (array[PartSize] == array[j]) ) {
                 swap(array[i], array[j]);
                 i++;
             }
@@ -35,7 +49,8 @@ int partition(int* array, int PartSize,int PivotIndex)
         return i;
 }
 
-int compute_k(int* array, int length, int k) {
+template <typename T>
+T compute_k(T* array, int length, int k) {
     // Функция, возвращающая k-элемент в сортированном массиве
    
     int begin=0;
@@ -45,7 +60,7 @@ int compute_k(int* array, int length, int k) {
     do{
 
 
-        begin+=partition(array+begin, end-begin-1, rand()%(end-begin));
+        begin+=partition(array+begin, end-begin-1, rand()%(end-begin),compare_more);
 
         // В будущем нам понадобится знать значение начала 
         last_begin=begin;
@@ -89,6 +104,8 @@ int main() {
 
    cout << compute_k(array, n, k);
     
+    system("pause");
+
     delete[] array;
     
     return 0;
