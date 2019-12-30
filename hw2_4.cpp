@@ -6,10 +6,10 @@ using namespace std;
 
 
 template <typename T>
-bool compare_more(const T first, const T second)
+bool compare_less(const T first, const T second)
 {
 
-if (first> second) {
+if (first< second) {
 return true;
 } else {
 return false;
@@ -34,7 +34,7 @@ int partition( T * array, const int PartSize, const int PivotIndex, bool (*compa
         // i-ого элемента, то считать можно начинать с 0
 
 
-            if ((compare(array[PartSize],array[j]))  or (array[PartSize] == array[j]) ) {
+            if ((compare(array[j],array[PartSize]))  or (array[PartSize] == array[j]) ) {
                 swap(array[i], array[j]);
                 i++;
             }
@@ -60,7 +60,7 @@ T compute_k(T* array, int length, int k) {
     do{
 
 
-        begin+=partition(array+begin, end-begin-1, rand()%(end-begin),compare_more);
+        begin+=partition(array+begin, end-begin-1, rand()%(end-begin),compare_less);
 
         // В будущем нам понадобится знать значение начала 
         last_begin=begin;
