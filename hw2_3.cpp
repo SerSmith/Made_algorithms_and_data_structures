@@ -10,10 +10,10 @@ using namespace std;
 
 
 template <typename T>
-bool compare_more(const T first, const T second)
+bool compare_less(const T first, const T second)
 {
 
-if (first> second) {
+if (first< second) {
 return true;
 } else {
 return false;
@@ -28,6 +28,8 @@ public:
 
 	seq(const int length_ , const int k_);
 	~seq();
+    seq<T>(const seq<T>&) = delete;
+    seq<T>(const seq<T>&&) = delete;
     seq<T>& operator=(const seq&) = delete;
     seq<T>& operator=(seq&&) = delete;
 
@@ -36,16 +38,6 @@ void GetFirstK(const bool EndFlg);
 
 // Добавдение нового элемента
 void AddElement(const T add);
-
-
-private:
-
-// Сортировка слиянием
-void MergeSort( T * a, const int length ) ;
-
-// Функция слияния двух массивов
-void Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int SecondQuant,T* out);
-
 
 //Массив длины 2*k для хранения пока не отсортированных элементов 
 T* array;
@@ -77,27 +69,7 @@ seq<T>::~seq()
 }
 
 template <typename T> 
-void seq<T>::MergeSort( T * a, const int length ) {
-if( length <= 1 ) {
-return;
-}
-int firstLen = length / 2;
-int secondLen = length - firstLen;
-// Нам не надо отдельно отсортировать первые k элементов изначального массива, так как они уже отсортированы, кроме как при первой сортировке
-if (length!=NowLenght or first_sorted!=1) MergeSort( a, firstLen );
-MergeSort( a + firstLen, secondLen );
-int* c = new int[length];
-
-Merge( a, firstLen, a + firstLen, secondLen, c );
-
-memcpy( a, c, sizeof( int ) * length );
-
-
-delete[] c;
-}
-
-template <typename T> 
-void seq<T>::Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int SecondQuant,T* out)
+void Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int SecondQuant,T* out,bool (*compare)(const T, const T)  )
 {
   
     int counter=0;
@@ -106,7 +78,7 @@ void seq<T>::Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,co
 
     while (i<FirstQuant or j<SecondQuant)
     {
-        if ((i>=FirstQuant) or (j<SecondQuant and compare_more(FirstArr[i],SecondArr[j])) ) 
+        if ((i>=FirstQuant) or (j<SecondQuant and compare_less(SecondArr[j],FirstArr[i])) ) 
         {
             out[counter]=SecondArr[j];
             j++;
@@ -122,6 +94,27 @@ void seq<T>::Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,co
 }
 
 template <typename T> 
+void MergeSort( T * a, const int length,bool (*compare)(const T, const T) ) {
+if( length <= 1 ) {
+return;
+}
+int firstLen = length / 2;
+int secondLen = length - firstLen;
+
+MergeSort( a + firstLen, secondLen, compare );
+int* c = new int[length];
+
+Merge( a, firstLen, a + firstLen, secondLen, c, compare );
+
+memcpy( a, c, sizeof( int ) * length );
+
+
+delete[] c;
+}
+
+
+
+template <typename T> 
 void seq<T>::GetFirstK(bool EndFlg)
 {
     int LengthOut=-1;
@@ -129,7 +122,13 @@ void seq<T>::GetFirstK(bool EndFlg)
     if (EndFlg==0) LengthOut=k; else 
     {LengthOut=NowLenght;} 
 
-    if (!EndFlg)  MergeSort( array, LengthMain ); else MergeSort( array, NowLenght ); 
+    if (!EndFlg){  
+        // Нам не надо отдельно отсортировать первые k элементов изначального массива, так как они уже отсортированы, кроме как при первой сортировке
+        if (LengthMain!=NowLenght or first_sorted!=1) MergeSort( array, LengthMain/2,compare_less);
+        MergeSort( array, LengthMain,compare_less );
+         } else {
+             MergeSort( array, NowLenght,compare_less ); 
+         }
     first_sorted=1;
 
 
@@ -159,7 +158,7 @@ int main()
   int num_numbers = 0;
   int window=0;
 
-  std::cin >> num_numbers>>window;
+  cin >> num_numbers>>window;
 
     seq<int> PartialSeq(2*window,window);
 
