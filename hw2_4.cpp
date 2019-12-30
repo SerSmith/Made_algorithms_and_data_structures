@@ -1,3 +1,4 @@
+
 // Скрипт, выдающий k-ый элемент в отсортированнном массиве
 // 09.11
 
@@ -6,10 +7,10 @@ using namespace std;
 
 
 template <typename T>
-bool compare_less(const T first, const T second)
+bool compare_more(const T first, const T second)
 {
 
-if (first< second) {
+if (first> second) {
 return true;
 } else {
 return false;
@@ -22,19 +23,19 @@ int partition( T * array, const int PartSize, const int PivotIndex, bool (*compa
 {
 
 
-  
+
     // Меняем опорный элемент с последним
     swap(array[PartSize],array[PivotIndex]);
     //Начало отсчета
     int i=0;
-    
-    
+
+
     for (int j = 0; j < PartSize; j++) {
         // Поскольку мы передаем в качестве array адрес 
         // i-ого элемента, то считать можно начинать с 0
 
 
-            if ((compare(array[j],array[PartSize]))  or (array[PartSize] == array[j]) ) {
+            if ((compare(array[PartSize],array[j]))  or (array[PartSize] == array[j]) ) {
                 swap(array[i], array[j]);
                 i++;
             }
@@ -44,7 +45,7 @@ int partition( T * array, const int PartSize, const int PivotIndex, bool (*compa
 
         // Меняем опорный элемент и элемент, на который указывает i
         swap(array[i], array[PartSize]);
-            
+
 
         return i;
 }
@@ -52,7 +53,7 @@ int partition( T * array, const int PartSize, const int PivotIndex, bool (*compa
 template <typename T>
 T compute_k(T* array, int length, int k) {
     // Функция, возвращающая k-элемент в сортированном массиве
-   
+
     int begin=0;
     int end=length;
     // В будущем нам понадобится знать значение начала 
@@ -60,7 +61,7 @@ T compute_k(T* array, int length, int k) {
     do{
 
 
-        begin+=partition(array+begin, end-begin-1, rand()%(end-begin),compare_less);
+        begin+=partition(array+begin, end-begin-1, rand()%(end-begin),compare_more);
 
         // В будущем нам понадобится знать значение начала 
         last_begin=begin;
@@ -70,10 +71,10 @@ T compute_k(T* array, int length, int k) {
             end=begin;
             begin=0;
         }
-    
 
-    
- 
+
+
+
 
     }
     // Если подобрали K элемент или отсортировали все, то можем останавливаться
@@ -83,11 +84,11 @@ T compute_k(T* array, int length, int k) {
 
 
     return array[k];
-        
-}
-    
 
-    
+}
+
+
+
 
 int main() {
     // Количество элементов в последовательности
@@ -95,7 +96,7 @@ int main() {
     // Номер элемента, который наддоо вернуть 
     int k=0;
     std::cin >> n >> k;
-    
+
     int* array=new int [n];
 
     for (int i = 0; i < n; i++) {
@@ -103,10 +104,10 @@ int main() {
     }
 
    cout << compute_k(array, n, k);
-    
+
     system("pause");
 
     delete[] array;
-    
+
     return 0;
-}
+} 

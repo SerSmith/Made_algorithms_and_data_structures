@@ -28,8 +28,6 @@ public:
 
 	seq(const int length_ , const int k_);
 	~seq();
-    seq<T>(const seq<T>&) = delete;
-    seq<T>(const seq<T>&&) = delete;
     seq<T>& operator=(const seq&) = delete;
     seq<T>& operator=(seq&&) = delete;
 
@@ -38,6 +36,10 @@ void GetFirstK(const bool EndFlg);
 
 // Добавдение нового элемента
 void AddElement(const T add);
+
+
+private:
+
 
 //Массив длины 2*k для хранения пока не отсортированных элементов 
 T* array;
@@ -68,6 +70,8 @@ seq<T>::~seq()
     delete [] array;
 }
 
+
+
 template <typename T> 
 void Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int SecondQuant,T* out,bool (*compare)(const T, const T)  )
 {
@@ -78,7 +82,7 @@ void Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int 
 
     while (i<FirstQuant or j<SecondQuant)
     {
-        if ((i>=FirstQuant) or (j<SecondQuant and compare_less(SecondArr[j],FirstArr[i])) ) 
+        if ((i>=FirstQuant) or (j<SecondQuant and compare_less(FirstArr[i],SecondArr[j])) ) 
         {
             out[counter]=SecondArr[j];
             j++;
@@ -158,7 +162,7 @@ int main()
   int num_numbers = 0;
   int window=0;
 
-  cin >> num_numbers>>window;
+  std::cin >> num_numbers>>window;
 
     seq<int> PartialSeq(2*window,window);
 
