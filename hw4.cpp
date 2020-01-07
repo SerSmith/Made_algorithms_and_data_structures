@@ -22,11 +22,11 @@ public:
   HashTable& operator=(const HashTable&) = delete;
   HashTable& operator=(HashTable&&) = delete;
 // Проверка имеется ли объект вхэш таблице 
-  bool Has(string data);
+ const bool Has(const string* data);
 // Добавление объекта в Хэш таблицу
-  bool Add(string data);
+  bool Add(string* data);
 // Удаление объекта из хэш таблицы  
-  bool Remove(string data);
+  bool Remove(string* data);
 private:
     // Увеличение размера таблицы 
     void reHash();
@@ -35,7 +35,7 @@ private:
     vector<int> deleted;
     // Хэщ функция, реализованная по схеме горнера, может запускаться в режиме 1 и 
     // 2(для разных реализаций)
-    int Hash_gorner(int mode, string data);
+    int Hash_gorner(int mode, const string* data);
     // Размер таблицы
     int size;
     // Размер по умолчанию
@@ -59,7 +59,7 @@ HashTable::HashTable() {
  HashTable::~HashTable(){
  }
 
-int HashTable::Hash_gorner(int mode, string data) {
+int HashTable::Hash_gorner(int mode, const string* data) {
     int result = 0;
     int mod_now=0;
     if (mode==1) {
@@ -68,8 +68,8 @@ int HashTable::Hash_gorner(int mode, string data) {
         mod_now=mod2;
     }
 
-    for (int i = 0; i < data.size(); ++i) {
-        result = (result * mod_now % size + data[i]) % size;
+    for (int i = 0; i < data->size(); ++i) {
+        result = (result * mod_now % size + (*data)[i]) % size;
     }
     if (mode==1) {
     return result % size;
@@ -82,31 +82,41 @@ int HashTable::Hash_gorner(int mode, string data) {
 
 
 
-bool HashTable::Add(string data) {
+bool HashTable::Add(string* data) {
 // Если объект уже имеется возвращаем ошибку
-    if (Has(data))
-        return false;
+
 
     int first_Hash = Hash_gorner(1,data);
     int second_Hash = Hash_gorner(2,data);
-    
+    int position=-1;
     for (int i = 0; i < size; ++i) {
-        if (deleted[first_Hash] == 0 || deleted[first_Hash] == 1) {
-            table[first_Hash] = data;
-            deleted[first_Hash] = -1;
+        if (deleted[first_Hash] ==1 && position == -1) {
+            position=first_Hash;
+        }
+        if (deleted[first_Hash] ==0)  {
+            if (position==-1){ position=first_Hash;
+            }
+            break;
+        }
+        if (deleted[first_Hash] == -1 && table[first_Hash] == *data){ 
+            return false;
+            }
+        first_Hash = (first_Hash + second_Hash) % size;
+    }
+
+    if (position!=-1) {
+        table[first_Hash] = *data;
+        deleted[first_Hash] = -1;
          // Если таблица недостаточно большая расширимся
          if (size <= (elements++) * 4/3) {
             reHash();
         }
-
-            return true;
-        }
-        first_Hash = (first_Hash + second_Hash) % size;
+        return true;
     }
     return false;
 }
 
-bool HashTable::Remove(string data) {
+bool HashTable::Remove(string* data) {
 
     int first_Hash = Hash_gorner(1,data);
     int second_Hash = Hash_gorner(2,data);
@@ -118,12 +128,12 @@ bool HashTable::Remove(string data) {
 
         if (deleted[first_Hash] != 0) {
 
-            if ((table[first_Hash] == data) && (deleted[first_Hash] == -1)) {
+            if ((table[first_Hash] == *data) && (deleted[first_Hash] == -1)) {
                 deleted[first_Hash] = 1;
                 // elements=elements-1;
                 return true;
             }
-            else if ((table[first_Hash] == data) && (deleted[first_Hash] == 1)) {
+            else if ((table[first_Hash] == *data) && (deleted[first_Hash] == 1)) {
                 return false;
             }
         }
@@ -132,7 +142,7 @@ bool HashTable::Remove(string data) {
     return false;
 }
 
-bool HashTable::Has(string data) {
+const bool HashTable::Has(const string* data) {
 
     int first_Hash = Hash_gorner(1,data);
     int second_Hash = Hash_gorner(2,data);
@@ -141,11 +151,11 @@ bool HashTable::Has(string data) {
     
         if (deleted[first_Hash] != 0) {
     
-            if (table[first_Hash] == data && deleted[first_Hash] == -1)
+            if (table[first_Hash] == *data && deleted[first_Hash] == -1)
     
                 return true;
     
-            else if (deleted[first_Hash] == 1 && table[first_Hash] == data)
+            else if (deleted[first_Hash] == 1 && table[first_Hash] ==  *data)
     
                 return false;
         }
@@ -166,7 +176,7 @@ void HashTable::reHash() {
 
     for (int i = 0; i < old_table.size(); ++i) {
         if (old_deleted[i] == -1) {
-           Add(old_table[i]);
+           Add(&old_table[i]);
         }
 
     }
@@ -182,7 +192,7 @@ int main() {
         string input, in_string;
         cin >> in_string;
         if (command == '+') {
-            if (table.Add(in_string)) {
+            if (table.Add(&in_string)) {
                 cout << "OK" << endl;
             }
             else {
@@ -190,7 +200,7 @@ int main() {
             }
         }
         else if (command == '-') {
-            if (table.Remove(in_string)) {
+            if (table.Remove(&in_string)) {
                 cout << "OK" << endl;
             }
             else {
@@ -198,7 +208,7 @@ int main() {
             }
         }
         else if (command == '?') {
-            if (table.Has(in_string)) {
+            if (table.Has(&in_string)) {
                 cout << "OK" << endl;
             }
             else {
