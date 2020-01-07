@@ -28,6 +28,8 @@ public:
 
 	seq(const int length_ , const int k_);
 	~seq();
+    seq<T>(const seq<T>&) = delete;
+    seq<T>(const seq<T>&&) = delete;
     seq<T>& operator=(const seq&) = delete;
     seq<T>& operator=(seq&&) = delete;
 
@@ -82,7 +84,7 @@ void Merge(const T* FirstArr, const int FirstQuant,const T* SecondArr,const int 
 
     while (i<FirstQuant or j<SecondQuant)
     {
-        if ((i>=FirstQuant) or (j<SecondQuant and compare_less(FirstArr[i],SecondArr[j])) ) 
+        if ((i>=FirstQuant) or (j<SecondQuant and compare_less(SecondArr[j],FirstArr[i])) ) 
         {
             out[counter]=SecondArr[j];
             j++;
